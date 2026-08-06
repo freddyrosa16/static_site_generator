@@ -1,17 +1,66 @@
 import unittest
-from htmlnode import HTMLNode
+
+from htmlnode import HTMLNode, LeafNode
 
 
 class TestHTMLNode(unittest.TestCase):
-    def test_HTML_tag_children(self):
-        node = HTMLNode(tag="div", children="p")
-        node.props_to_html()
-
-    def test_HTML(self):
+    def test_to_html_props(self):
         node = HTMLNode(
-            tag="p",
-            value="I like boot.dev",
-            children="a",
-            props={"href": "boot.dev"},
+            "div",
+            "Hello, world!",
+            None,
+            {"class": "greeting", "href": "https://boot.dev"},
         )
-        node.props_to_html()
+        self.assertEqual(
+            node.props_to_html(),
+            ' class="greeting" href="https://boot.dev"',
+        )
+
+    def test_values(self):
+        node = HTMLNode(
+            "div",
+            "I wish I could read",
+        )
+        self.assertEqual(
+            node.tag,
+            "div",
+        )
+        self.assertEqual(
+            node.value,
+            "I wish I could read",
+        )
+        self.assertEqual(
+            node.children,
+            None,
+        )
+        self.assertEqual(
+            node.props,
+            None,
+        )
+
+    def test_repr(self):
+        node = HTMLNode(
+            "p",
+            "What a strange world",
+            None,
+            {"class": "primary"},
+        )
+        self.assertEqual(
+            node.__repr__(),
+            "HTMLNode(p, What a strange world, children: None, {'class': 'primary'})",
+        )
+
+    def test_leaf_to_html_p(self):
+        node = LeafNode("p", "Hello, world!")
+        self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
+
+    def test_leaf_to_html_props(self):
+        node = LeafNode("a", "I like boot.dev", {"href": "boot.dev"})
+        self.assertEqual(node.to_html(), '<a href="boot.dev">I like boot.dev</a>')
+
+    def test_leaf_no_tag(self):
+        node = LeafNode(tag=None, value="I like boot.dev")
+        self.assertEqual(node.to_html(), "I like boot.dev")
+
+if __name__ == "__main__":
+    unittest.main()
